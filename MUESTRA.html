@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escuela de Formación Policial CATAMAYO - Sanciónes</title>
+    <link rel="icon"type="image/png" href="imagenes/11.png"/>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+            color: #343a40;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #004085;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        header img {
+            position: absolute;
+            top: 20px; 
+            left: 40px;
+            width: 100px;
+            height: auto;
+        }
+        main {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #f0f2f5;
+        }
+        h2 {
+            text-align: center;
+            color: #2b4368;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #dee2e6;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #004085;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e2e6ea;
+        }
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        form input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        form button {
+            padding: 10px 15px;
+            background-color: #004085;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #002752;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="imagenes/10.png" alt="Policía">
+        <h1>Escuela de Formación Policial CATAMAYO</h1>
+    </header>
+    <main>
+        <h2>Sanciónes</h2>
+        <table id="sancionesTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Sancionador</th>
+                    <th>Falta</th>
+                    <th>Puntaje</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas generadas dinámicamente -->
+            </tbody>
+        </table>
+
+        <h2>Agregar Nueva Sanción</h2>
+        <form id="sancionForm">
+            <div>
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+            <div>
+                <label for="sancionador">Sancionador</label>
+                <input type="text" id="sancionador" name="sancionador">
+            </div>
+            <div>
+                <label for="falta">Falta</label>
+                <input type="text" id="falta" name="falta">
+            </div>
+            <div>
+                <label for="puntaje">Puntaje</label>
+                <input type="number" step="0.01" id="puntaje" name="puntaje">
+            </div>
+            <div>
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha">
+            </div>
+            <button type="submit">Agregar</button>
+        </form>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const form = document.getElementById('sancionForm');
+            const tableBody = document.querySelector('#sancionesTable tbody');
+            const sanciones = JSON.parse(localStorage.getItem('sanciones')) || [];
+
+            function renderTable() {
+                tableBody.innerHTML = '';
+                sanciones.forEach((sancion, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${sancion.nombre}</td>
+                        <td>${sancion.sancionador}</td>
+                        <td>${sancion.falta}</td>
+                        <td>${sancion.puntaje}</td>
+                        <td>${sancion.fecha}</td>
+                        <td><button onclick="deleteSancion(${index})">Eliminar</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function deleteSancion(index) {
+                sanciones.splice(index, 1);
+                localStorage.setItem('sanciones', JSON.stringify(sanciones));
+                renderTable();
+            }
+
+            window.deleteSancion = deleteSancion;
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newSancion = {
+                    nombre: form.nombre.value,
+                    sancionador: form.sancionador.value,
+                    falta: form.falta.value,
+                    puntaje: form.puntaje.value,
+                    fecha: form.fecha.value
+                };
+                sanciones.push(newSancion);
+                localStorage.setItem('sanciones', JSON.stringify(sanciones));
+                form.reset();
+                renderTable();
+            });
+
+            renderTable();
+        });
+    </script>
+</body>
+</html>
